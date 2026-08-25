@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Casaa Tune</title>
+<meta name="theme-color" content="#0b0d10">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚗</text></svg>">
+<style>
+:root{
+  --bg:#f6f7f9; --card:#fff; --ink:#12151a; --muted:#5b6472; --line:#e3e7ed;
+  --accent:#2563eb; --warn:#b45309; --warnbg:#fef3c7; --danger:#b91c1c;
+  --ok:#15803d; --chg:#7c3aed; --chgbg:#f3e8ff; --inert:#6b7280; --inertbg:#f1f3f5;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b0d10; --card:#14181d; --ink:#e8ecf1; --muted:#8b95a4; --line:#232a33;
+  --accent:#60a5fa; --warn:#fbbf24; --warnbg:#2b2213; --danger:#f87171;
+  --ok:#4ade80; --chg:#c4b5fd; --chgbg:#241b3a; --inert:#7d8794; --inertbg:#1a1f26;
+}}
+:root[data-theme="dark"]{
+  --bg:#0b0d10; --card:#14181d; --ink:#e8ecf1; --muted:#8b95a4; --line:#232a33;
+  --accent:#60a5fa; --warn:#fbbf24; --warnbg:#2b2213; --danger:#f87171;
+  --ok:#4ade80; --chg:#c4b5fd; --chgbg:#241b3a; --inert:#7d8794; --inertbg:#1a1f26;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);}
+.wrap{max-width:860px;margin:0 auto;padding:16px 14px 64px}
+
+header{position:sticky;top:0;z-index:20;background:var(--bg);
+  padding:12px 0 10px;border-bottom:1px solid var(--line);margin-bottom:14px}
+h1{margin:0;font-size:19px;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.sub{color:var(--muted);font-size:12.5px;margin-top:4px;font-family:var(--mono);
+  overflow-wrap:anywhere}
+.bar{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+input[type=search]{flex:1 1 180px;min-width:0;padding:9px 12px;border:1px solid var(--line);
+  border-radius:9px;background:var(--card);color:var(--ink);font-size:15px}
+button{padding:9px 14px;border:1px solid var(--line);border-radius:9px;background:var(--card);
+  color:var(--ink);font-size:14px;cursor:pointer;white-space:nowrap}
+button:active{transform:translateY(1px)}
+button.on{background:var(--accent);color:#fff;border-color:transparent}
+
+.stats{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12.5px;color:var(--muted)}
+.stats b{color:var(--ink)}
+
+.grp{margin:26px 0 0}
+.grp h2{font-size:15px;margin:0 0 3px;display:flex;align-items:center;gap:8px}
+.grp .blurb{color:var(--muted);font-size:13px;margin:0 0 12px;max-width:62ch}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:13px;
+  padding:14px;margin-bottom:10px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.nm{font-weight:600;font-size:14.5px}
+.path{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:3px;overflow-wrap:anywhere}
+.val{text-align:right;flex:0 0 auto}
+.v{font-family:var(--mono);font-size:19px;font-weight:600;letter-spacing:-.02em}
+.u{font-size:11px;color:var(--muted);margin-top:2px}
+.stock{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:4px}
+.err{color:var(--danger);font-size:13px;font-family:var(--mono)}
+
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px}
+.tag{font-size:10.5px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;
+  padding:3px 7px;border-radius:5px;background:var(--inertbg);color:var(--inert)}
+.tag.changed{background:var(--chgbg);color:var(--chg)}
+.tag.warn{background:var(--warnbg);color:var(--warn)}
+
+.body{margin-top:11px;font-size:13.5px;color:var(--ink)}
+.body p{margin:0 0 7px}
+.lbl{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;
+  letter-spacing:.04em;margin-right:5px}
+.note{margin-top:9px;padding:9px 11px;background:var(--warnbg);color:var(--warn);
+  border-radius:8px;font-size:12.5px}
+details summary{cursor:pointer;color:var(--accent);font-size:13px;margin-top:9px;
+  list-style:none;user-select:none}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"▸ ";display:inline-block;transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+.hide{display:none}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);
+  color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>🚗 Casaa Tune</h1>
+  <div class="sub" id="meta">loading…</div>
+  <div class="bar">
+    <input type="search" id="q" placeholder="Search parameters…" autocomplete="off">
+    <button id="fDiff">Changed only</button>
+    <button id="fLive">Hide inert</button>
+    <button id="reload" title="Re-fetch from GitHub">↻</button>
+  </div>
+  <div class="stats" id="stats"></div>
+</header>
+
+<main id="out"></main>
+
+<footer>
+  Read-only. Fetches <b id="fBranch"></b> live from GitHub on every load — it cannot
+  write, commit, or change anything on the car.<br>
+  Stock column = <span id="fStock"></span>, the upstream base this build sits on.
+</footer>
+</div>
+
+<script src="params.js"></script>
+<script>
+const RAW = (ref,path)=>`https://raw.githubusercontent.com/${REPO}/${ref}/${path}`;
+const $ = s=>document.querySelector(s);
+let DATA={}, STATE={q:"",diff:false,live:false};
+
+function parse(txt, re){
+  if(!txt) return null;
+  const m = txt.match(re);
+  return m ? m[1].trim() : null;
+}
+function norm(v){ return v==null?null:v.replace(/\s+/g,"").replace(/\.(?=\D|$)/g,""); }
+
+async function grab(ref, path){
+  try{
+    const r = await fetch(RAW(ref,path),{cache:"no-store"});
+    return r.ok ? await r.text() : null;
+  }catch(e){ return null; }
+}
+
+async function load(){
+  $("#out").innerHTML = '<p style="color:var(--muted)">Fetching from GitHub…</p>';
+  const paths = [...new Set(GROUPS.flatMap(g=>g.params.map(p=>p.file)).filter(Boolean))];
+  const [cur,stk] = await Promise.all([
+    Promise.all(paths.map(p=>grab(BRANCH,p))),
+    Promise.all(paths.map(p=>grab(STOCK_REF,p))),
+  ]);
+  DATA = {cur:{},stk:{}};
+  paths.forEach((p,i)=>{ DATA.cur[p]=cur[i]; DATA.stk[p]=stk[i]; });
+
+  // HEAD sha for provenance
+  try{
+    const r = await fetch(`https://api.github.com/repos/${REPO}/commits/${BRANCH}`,{cache:"no-store"});
+    if(r.ok){ const j = await r.json();
+      $("#meta").textContent = `${BRANCH} @ ${j.sha.slice(0,9)} · ${new Date(j.commit.committer.date).toLocaleString()}`;
+    } else $("#meta").textContent = `${BRANCH} (sha unavailable)`;
+  }catch(e){ $("#meta").textContent = BRANCH; }
+  render();
+}
+
+function render(){
+  let nTot=0,nChg=0,nErr=0,nInert=0;
+  const html = GROUPS.map(g=>{
+    const cards = g.params.map(p=>{
+      const tags = p.tags||[];
+      const inert = tags.some(t=>["inert","panda","fixed"].includes(t));
+      let v=null, s=null;
+      if(p.file && p.re){ v = parse(DATA.cur[p.file],p.re); s = parse(DATA.stk[p.file],p.re); }
+      const changed = v!=null && s!=null && norm(v)!==norm(s);
+      nTot++; if(changed) nChg++; if(inert) nInert++;
+      if(p.file && p.re && v==null) nErr++;
+
+      // filters
+      const hay = (p.label+" "+p.what+" "+(p.note||"")+" "+(p.file||"")).toLowerCase();
+      if(STATE.q && !hay.includes(STATE.q)) return "";
+      if(STATE.diff && !changed) return "";
+      if(STATE.live && inert) return "";
+
+      const tagHtml = [
+        changed?'<span class="tag changed">changed</span>':"",
+        tags.includes("inert")?'<span class="tag warn">does nothing on Atto 3</span>':"",
+        tags.includes("panda")?'<span class="tag warn">panda — not compiled on device</span>':"",
+        tags.includes("fixed")?'<span class="tag">fixed by hardware</span>':"",
+        tags.includes("rebuild")?'<span class="tag">needs rebuild</span>':"",
+        tags.includes("app")?'<span class="tag">set in app</span>':"",
+      ].join("");
+
+      const valHtml = p.file===null
+        ? `<div class="v" style="color:var(--muted)">app</div>`
+        : (v==null
+            ? `<div class="err">couldn't read</div>`
+            : `<div class="v">${v}</div>
+               <div class="u">${p.unit||""}</div>
+               ${s!=null&&changed?`<div class="stock">stock ${s}</div>`:""}`);
+
+      return `<div class="card">
+        <div class="top">
+          <div style="min-width:0">
+            <div class="nm">${p.label}</div>
+            ${p.file?`<div class="path">${p.file}</div>`:""}
+          </div>
+          <div class="val">${valHtml}</div>
+        </div>
+        ${tagHtml?`<div class="tags">${tagHtml}</div>`:""}
+        <div class="body">
+          <p>${p.what}</p>
+          ${p.dir&&p.dir!=="—"?`<p><span class="lbl">Raising it</span>${p.dir}</p>`:""}
+          ${p.safe?`<p><span class="lbl">Sensible range</span><span style="font-family:var(--mono)">${p.safe}</span></p>`:""}
+          ${p.note?`<div class="note">${p.note}</div>`:""}
+        </div>
+      </div>`;
+    }).join("");
+    if(!cards.trim()) return "";
+    return `<section class="grp"><h2>${g.icon} ${g.name}</h2>
+      <p class="blurb">${g.blurb}</p>${cards}</section>`;
+  }).join("");
+
+  $("#out").innerHTML = html || '<p style="color:var(--muted)">Nothing matches that filter.</p>';
+  $("#stats").innerHTML =
+    `<span><b>${nTot}</b> parameters</span>
+     <span><b>${nChg}</b> differ from stock</span>
+     <span><b>${nInert}</b> inert / read-only</span>
+     ${nErr?`<span style="color:var(--danger)"><b>${nErr}</b> unreadable</span>`:""}`;
+  $("#fBranch").textContent = `${REPO} @ ${BRANCH}`;
+  $("#fStock").textContent = `${STOCK_LABEL} (${STOCK_REF})`;
+}
+
+$("#q").addEventListener("input",e=>{STATE.q=e.target.value.toLowerCase().trim();render();});
+$("#fDiff").addEventListener("click",e=>{STATE.diff=!STATE.diff;e.target.classList.toggle("on",STATE.diff);render();});
+$("#fLive").addEventListener("click",e=>{STATE.live=!STATE.live;e.target.classList.toggle("on",STATE.live);render();});
+$("#reload").addEventListener("click",load);
+load();
+</script>
+</body>
+</html>
